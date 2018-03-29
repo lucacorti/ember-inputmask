@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { once } from '@ember/runloop';
+import { observer } from '@ember/object';
 import InputMaskComponent from 'ember-inputmask/components/input-mask';
 
 /**
@@ -18,6 +19,9 @@ import InputMaskComponent from 'ember-inputmask/components/input-mask';
 export default InputMaskComponent.extend({
   mask:    '(299) 999-9999',
 
+  oldComponent: '{{phone-number-input}}',
+  newComponent: '{{one-way-phone-mask}}',
+
   updateMask: function() {
     if (this.get('extensions')) {
       this.set('mask', '(299) 999-9999[ x 9{1,4}]');
@@ -26,7 +30,7 @@ export default InputMaskComponent.extend({
     this._super();
   },
 
-  _maskShouldChange: Ember.observer('mask', 'extensions', function() {
-    Ember.run.once(this, 'updateMask');
+  _maskShouldChange: observer('mask', 'extensions', function() {
+    once(this, 'updateMask');
   })
 });

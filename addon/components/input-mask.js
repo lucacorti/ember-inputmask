@@ -1,6 +1,10 @@
-/* global Inputmask */
-
-import Ember from 'ember';
+import { once, debounce } from '@ember/runloop';
+import { deprecate } from '@ember/debug';
+import { isPresent } from '@ember/utils';
+import { on } from '@ember/object/evented';
+import { computed, observer, get } from '@ember/object';
+import TextField from '@ember/component/text-field';
+import Inputmask from 'inputmask';
 
 /**
  * `{{input-mask}}` component.
@@ -25,7 +29,7 @@ import Ember from 'ember';
  *     Enable by setting debounce > 0, makes sure to deduplicate calls to update the UI and only deliver the last ui change
  */
 
-export default Ember.TextField.extend({
+export default TextField.extend({
   mask: '',
 
   showMaskOnFocus: true,
@@ -41,7 +45,19 @@ export default Ember.TextField.extend({
 
   value: 'value',
 
-  options: Ember.computed(function() {
+  oldComponent: '{{input-mask}}',
+  newComponent: '{{one-way-input-mask}}',
+
+  init() {
+    this._super(...arguments);
+    let message = `${get(this, 'oldComponent')} is deprecated in favor of ${get(this, 'newComponent')} and will be removed in 1.0.0`;
+    deprecate(message, false, {
+      id: 'non-one-way-mask',
+      until: '1.0.0',
+    });
+  },
+
+  options: computed(function() {
     return {};
   }),
 
@@ -52,7 +68,7 @@ export default Ember.TextField.extend({
   },
 
   // Remove the mask from the input
-  teardownMask: Ember.on('willDestroyElement', function() {
+  teardownMask: on('willDestroyElement', function() {
     if (this.element.inputmask) {
       this.element.inputmask.remove();
     }
@@ -79,7 +95,7 @@ export default Ember.TextField.extend({
     inputmask.mask(this.element);
 
     // Initialize the unmasked value if it exists
-    if (this.get('unmaskedValue')) {
+    if (isPresent(this.get('unmaskedValue'))) {
       this.element.value = this.get('unmaskedValue');
     }
 
@@ -117,7 +133,7 @@ export default Ember.TextField.extend({
     this.setMask();
   },
 
-  _maskShouldChange: Ember.observer('mask',
+  _maskShouldChange: observer('mask',
     'maskPlaceholder',
     'showMaskOnFocus',
     'showMaskOnHover',
@@ -127,7 +143,7 @@ export default Ember.TextField.extend({
     'pattern',
     'regex',
     function() {
-      Ember.run.once(this, 'updateMask');
+      once(this, 'updateMask');
   }),
 
   updateVar: function () {
@@ -140,17 +156,17 @@ export default Ember.TextField.extend({
   },
 
   // Unmask the value of the field and set the property.
-  setUnmaskedValue: Ember.observer('value', function() {
+  setUnmaskedValue: observer('value', function() {
     if (this.element && this.element.inputmask) {
       this.set('unmaskedValue', this.element.inputmask.unmaskedvalue());
     }
   }),
 
   // When the unmaskedValue changes, set the value.
-  setValue: Ember.observer('unmaskedValue', function() {
-    var debounce = this.get('debounce');
-    if ( debounce ) {
-      Ember.run.debounce(this, this.updateVar, debounce);
+  setValue: observer('unmaskedValue', function() {
+    let debounceTime = this.get('debounce');
+    if ( debounceTime ) {
+      debounce(this, this.updateVar, debounce);
     } else {
       this.updateVar();
     }

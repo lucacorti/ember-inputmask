@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { once } from '@ember/runloop';
+import { observer } from '@ember/object';
 import InputMaskComponent from 'ember-inputmask/components/input-mask';
 
 /**
@@ -19,6 +20,9 @@ export default InputMaskComponent.extend({
 
   fullCode: false,
 
+  oldComponent: '{{zip-code-input}}',
+  newComponent: '{{one-way-zip-code-mask}}',
+
   updateMask: function() {
     if (this.get('fullCode')) {
       this.set('mask', '99999[-9999]');
@@ -27,7 +31,7 @@ export default InputMaskComponent.extend({
     this._super();
   },
 
-  _maskShouldChange: Ember.observer('mask', 'fullCode', function() {
-    Ember.run.once(this, 'updateMask');
+  _maskShouldChange: observer('mask', 'fullCode', function() {
+    once(this, 'updateMask');
   })
 });

@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { once } from '@ember/runloop';
+import { observer } from '@ember/object';
 import InputMaskComponent from 'ember-inputmask/components/input-mask';
 
 /**
@@ -49,6 +50,9 @@ export default InputMaskComponent.extend({
   suffix:         '',
   unmaskAsNumber: false,
 
+  oldComponent: '{{number-input}}',
+  newComponent: '{{one-way-number-mask}}',
+
   updateMask: function() {
     this.setProperties({
       'options.autoGroup':      this.get('group'),
@@ -74,7 +78,7 @@ export default InputMaskComponent.extend({
     this._super();
   },
 
-  _maskShouldChange: Ember.observer(
+  _maskShouldChange: observer(
     'mask',
     'group',
     'decimal',
@@ -88,6 +92,6 @@ export default InputMaskComponent.extend({
     'suffix',
     'unmaskAsNumber',
     function() {
-      Ember.run.once(this, 'updateMask');
+      once(this, 'updateMask');
   })
 });

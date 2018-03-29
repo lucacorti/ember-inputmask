@@ -3,41 +3,46 @@
 <div class='container'>
   <fieldset>
     <legend>Generic input mask:</legend>
-    {{input-mask mask="AAAA" greedyMask=true}}
+    {{one-way-input-mask mask="AAAA"}}
+  </fieldset>
+
+  <fieldset>
+    <legend>Number mask:</legend>
+    {{one-way-number-mask}}
   </fieldset>
 
   <fieldset>
     <legend>SSN input:</legend>
-    {{ssn-input value=ssnValue pattern='^\d{3}-\d{2}-\d{4}$'}}
+    {{one-way-ssn-mask value=ssnValue pattern='^\d{3}-\d{2}-\d{4}$'}}
   </fieldset>
 
   <fieldset>
     <legend>Credit card input:</legend>
-    {{credit-card-input value=blah cardType=cardTypeValue}} {{cardTypeValue}}
+    {{one-way-credit-card-mask update=(action 'updateCardType')}} {{cardTypeValue}}
   </fieldset>
 
   <fieldset>
     <legend>Phone input:</legend>
-    {{phone-number-input unmaskedValue=numberValue extensions=true}}
+    {{one-way-phone-mask value=numberValue extensions=true}}
   </fieldset>
 
   <fieldset>
     <legend>Email input:</legend>
-    {{email-input value=testValue}}
+    {{one-way-email-mask value=testValue}}
   </fieldset>
 
   <fieldset>
     <legend>US Zip code input:</legend>
-    {{zip-code-input}}
+    {{one-way-zip-code-mask}}
   </fieldset>
 
   <fieldset>
     <legend>Currency input:</legend>
-    {{currency-input}}
+    {{one-way-currency-mask}}
   </fieldset>
 
   <fieldset>
     <legend>Date input:</legend>
-    {{date-input}}
+    {{one-way-date-mask}}
   </fieldset>
 </div>

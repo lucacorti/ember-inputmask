@@ -1,4 +1,5 @@
-import Ember from 'ember';
+import { once } from '@ember/runloop';
+import { observer } from '@ember/object';
 import InputMaskComponent from 'ember-inputmask/components/input-mask';
 
 /**
@@ -14,6 +15,9 @@ import InputMaskComponent from 'ember-inputmask/components/input-mask';
  */
 
 export default InputMaskComponent.extend({
+  oldComponent: '{{credit-card-input}}',
+  newComponent: '{{one-way-credit-card-mask}}',
+
   updateMask: function() {
     var cardType  = this.get('cardType'),
         s         = this.get('separator') || '-', // s for separator for convenience
@@ -21,7 +25,7 @@ export default InputMaskComponent.extend({
                                                   // of defining it on the model
 
     if (cardType === 'American Express') {
-      mask = '9999' + s + '9999999' + s + '9999';
+      mask = '9999' + s + '999999' + s + '99999';
     } else if (cardType === 'Diners Club') {
       mask = '9999' + s + '999999' + s + '9999';
     } else {
@@ -34,11 +38,11 @@ export default InputMaskComponent.extend({
     this._super();
   },
 
-  _maskShouldChange: Ember.observer('mask', 'cardType', 'separator', function() {
-    Ember.run.once(this, 'updateMask');
+  _maskShouldChange: observer('mask', 'cardType', 'separator', function() {
+    once(this, 'updateMask');
   }),
 
-  updateCardType: Ember.observer('unmaskedValue', function() {
+  updateCardType: observer('unmaskedValue', function() {
     var unmaskedValue = this.get('unmaskedValue') || '',
         cardType;
 
